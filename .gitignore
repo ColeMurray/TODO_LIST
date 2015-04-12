@@ -1,0 +1,8 @@
+#Ignore env
+venv
+
+#ignore db
+app.db
+
+#python
+*.pyc
