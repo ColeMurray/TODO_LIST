@@ -66,7 +66,7 @@ class TaskListApi(Resource):
         args = self.reqparse.parse_args()
         username = g.user.username
         title = args['title']
-        description = args['title']
+        description = args['description']
         done = args['done']
 
         task = Task(title,description,done, g.user)
