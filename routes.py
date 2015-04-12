@@ -82,10 +82,14 @@ class TaskApi(Resource):
         self.reqparse.add_argument('description', type=str, location='json')
         self.reqparse.add_argument('done', type=bool, location='json')
         super(TaskApi,self).__init__()
-
+    @auth.login_required
     def get(self,id):
-        return { 'task' : 'id'}
-        #return task matching ID from Db
+        args = self.reqparse.parse_args()
+        task = Task.query.get(id)
+        if task is None or task.author is not g.user:
+            abort (404)
+        
+        return { 'result' : marshal(task,taskfields)}
     def put(self,id):
         return { 'task' : 'id'}
         #update task matching id in DB
