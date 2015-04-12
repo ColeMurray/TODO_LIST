@@ -1,7 +1,7 @@
 from app import app, db
 from flask import g
 from flask.ext.restful import Api,Resource, reqparse, fields, marshal, abort
-from models import User
+from models import User,Task
 from flask.ext.httpauth import HTTPBasicAuth
 
 api = Api(app)
@@ -9,6 +9,11 @@ auth = HTTPBasicAuth()
 userfields = {
     'username' : fields.String,
     'password' : fields.String
+}
+taskfields = {
+    'title' : fields.String,
+    'description' : fields.String,
+    'done' : fields.Boolean
 }
 
 class UserApi(Resource):
@@ -46,12 +51,29 @@ class TaskListApi(Resource):
                                     location='json')
         self.reqparse.add_argument('description', type=str, default="",
                                     location='json')
+        self.reqparse.add_argument('done', type=bool, default=False,
+                                    location='json')
         super(TaskListApi,self).__init__()
+    @auth.login_required
+    def get(self):
+        tasks = g.user.tasks.all()
+        return {'Tasks' : marshal(tasks,taskfields)}
        
+    @auth.login_required
     def post(self):
-        return { 'tasks' : 'success'}
         #Add post to DB
         #return post in JSON with 201
+        args = self.reqparse.parse_args()
+        username = g.user.username
+        title = args['title']
+        description = args['title']
+        done = args['done']
+
+        task = Task(title,description,done, g.user)
+        db.session.add(task)
+        db.session.commit()
+
+        return { 'result' : True }
 
 class TaskApi(Resource):
     def __init__ (self):
@@ -60,6 +82,7 @@ class TaskApi(Resource):
         self.reqparse.add_argument('description', type=str, location='json')
         self.reqparse.add_argument('done', type=bool, location='json')
         super(TaskApi,self).__init__()
+
     def get(self,id):
         return { 'task' : 'id'}
         #return task matching ID from Db

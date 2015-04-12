@@ -29,14 +29,16 @@ class Task (db.Model):
     id = db.Column (db.Integer, primary_key=True)
     title = db.Column(db.String(50), index=True, unique=False)
     description = db.Column (db.String(128), index=True, unique = False)
+    done = db.Column (db.Boolean, unique = False)
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
 
-    def __init__ (self,title,description,author):
+    def __init__ (self,title,description,done,author):
         self.title = title
         self.description = description
+        self.done = done
         self.author = author
 
     def __repr__(self):
-        return '<Task %r %r %r>' % (self.title,self.author,self.body)
+        return '<Task %r %r %r>' % (self.title,self.author,self.description)
 
     
