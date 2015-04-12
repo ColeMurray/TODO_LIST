@@ -13,7 +13,8 @@ userfields = {
 taskfields = {
     'title' : fields.String,
     'description' : fields.String,
-    'done' : fields.Boolean
+    'done' : fields.Boolean,
+    'uri' : fields.Url('task')
 }
 
 @app.route('/')
@@ -60,7 +61,8 @@ class TaskListApi(Resource):
     @auth.login_required
     def get(self):
         tasks = g.user.tasks.all()
-        return {'Tasks' : marshal(tasks,taskfields)}
+        return {'tasks' : marshal(tasks,taskfields)}
+
        
     @auth.login_required
     def post(self):
@@ -114,7 +116,7 @@ def verify_password(username,password):
     g.user = user
     return True
 
-api.add_resource(TaskListApi, '/todo/api/v2/tasks/', endpoint = 'tasks')
+api.add_resource(TaskListApi, '/todo/api/v2/tasks', endpoint = 'tasks')
 api.add_resource(TaskApi, '/todo/api/v2/tasks/<int:id>', endpoint = 'task')
 api.add_resource(UserApi, '/todo/api/v2/user/', endpoint = 'user')
 

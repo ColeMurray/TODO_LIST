@@ -6,33 +6,44 @@
             <td><b>Task</b></td>
             <td><b>Options</b></td>
         </tr> <!-- end tr -->
+        <!-- ko foreach: tasks -->
         <tr>
             <td>
-                <span class="label label-success">Done</span>
+                <span data-bind="visible:done" class="label label-success">Done
+                </span>
+                <span data-bind="visible: !done()" class="label label-important">
+                    In Progress
+                </span>
             </td>
             <td>
-                <p><b> Task Title</b></p><p> Task Description</p>
+                <p><b data-bind="text: title"></b></p>
+                <p data-bind="text:description"</p>
             </td>
             <td>
-                <button class ="btn">Edit </button>
-                <button class ="btn">Delete</button>
-                <button class ="btn">Mark in Progress</button>
-            </td>
-        </tr> <!-- end tr -->
-        <tr>
-            <td>
-                <span class="label label-important">Urgent!</span>
-            </td>
-            <td>
-                <p><b> Task Title</b></p><p>Task Description</p>
-            </td>
-            <td>
-                <button class ="btn">Edit </button>
-                <button class ="btn">Delete</button>
-                <button class ="btn">Mark Done</button>
-            </td>
-        </tr> <!-- end tr -->
+                <button data-bind="click: $parent.beginEdit" class ="btn">
+                    Edit 
+                </button>
+                <button data-bind="click: $parent.remove" class ="btn">
+                    Delete
+                </button>
+                <span data-bind="visible: done">
+                    <button data-bind="click: $parent.markInProgress" class ="btn">
+                        Mark in Progress
+                    </button>
+                </span>
+                <span data-bind="visible: !done()">
+                    <button data-bind="click: $parent.markDone" class="btn">
+                        Mark Done
+                    </button>
+                </span>
+            </td><!-- end td -->
+         </tr> <!-- end tr -->
+         <!-- /ko -->
+    </table>  <!-- end table -->
+    <button data-bind="click: beginAdd" class="btn"> Add Task </button>
 
-    </table>
+    <script src="{{ url_for('static', filename='js/taskviewmodel.js')}}"></script>
+
+    {% include "add_task.html" %}
 
 {% endblock %}
