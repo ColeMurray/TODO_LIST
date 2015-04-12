@@ -6,3 +6,6 @@ app.db
 
 #python
 *.pyc
+
+#Mac
+.DS_Store
