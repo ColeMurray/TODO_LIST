@@ -93,9 +93,15 @@ class TaskApi(Resource):
     def put(self,id):
         return { 'task' : 'id'}
         #update task matching id in DB
+    @auth.login_required
     def delete(self,id):
-        return { 'task' : 'id'}
         #remove entry from DB
+        task = Task.query.get(id)
+        if task is None:
+            abort(404)
+        db.session.delete(task)
+        db.session.commit()
+        return { 'result' : 'true' }
 
 @auth.verify_password
 def verify_password(username,password):
