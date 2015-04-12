@@ -1,5 +1,5 @@
 from app import app, db
-from flask import g
+from flask import g, render_template, url_for
 from flask.ext.restful import Api,Resource, reqparse, fields, marshal, abort
 from models import User,Task
 from flask.ext.httpauth import HTTPBasicAuth
@@ -16,6 +16,9 @@ taskfields = {
     'done' : fields.Boolean
 }
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 class UserApi(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
@@ -114,4 +117,6 @@ def verify_password(username,password):
 api.add_resource(TaskListApi, '/todo/api/v2/tasks/', endpoint = 'tasks')
 api.add_resource(TaskApi, '/todo/api/v2/tasks/<int:id>', endpoint = 'task')
 api.add_resource(UserApi, '/todo/api/v2/user/', endpoint = 'user')
+
+
 
