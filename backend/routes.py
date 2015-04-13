@@ -77,8 +77,8 @@ class TaskListApi(Resource):
         task = Task(title,description,done, g.user)
         db.session.add(task)
         db.session.commit()
-
-        return { 'result' : True }
+        taskInDB = Task.query.get(task.id)
+        return { 'task' : marshal(task,taskfields) },201
 
 class TaskApi(Resource):
     def __init__ (self):
@@ -95,8 +95,29 @@ class TaskApi(Resource):
             abort (404)
         
         return { 'result' : marshal(task,taskfields)}
+    @auth.login_required
     def put(self,id):
-        return { 'task' : 'id'}
+        task = Task.query.get(id)
+        args = self.reqparse.parse_args()
+        title = args['title']
+        description = args['description']
+        done = args['done']
+
+        if title is not None:
+            task.title = title
+        if description is not None:
+            task.description = description
+        if done is not None:
+            task.done = done
+
+
+
+            
+        
+
+        db.session.commit()
+        task = Task.query.get(id)
+        return { 'task' : marshal(task,taskfields)}
         #update task matching id in DB
     @auth.login_required
     def delete(self,id):
