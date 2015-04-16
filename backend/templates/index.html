@@ -101,13 +101,14 @@
                 <div class="control-group">
                     <label class="control-label" for="inputPassword"> Password</label>
                     <div class="controls">
-                        <input data-bind="value: password" type="text" id="inputPassword" placeholder="Password" style= "width: 300px;">
+                        <input data-bind="value: password" type="password" id="inputPassword" placeholder="Password" style= "width: 300px;">
                     </div>
                 </div>
             </form>
         </div>
         <div class= "modal-footer">
-            <button data-bind="click: login" class= "btn btn-primary">Login</button>
+            <button id="loginBtn" data-bind="click: login" class= "btn btn-primary">Login</button>
+            <button data-bind="click: register" class = "btn btn-primary">Register</button>
             <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
         </div>
     </div>

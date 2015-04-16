@@ -1,6 +1,7 @@
 function TasksViewModel(){
     var self = this;
     self.tasksURI = 'http://localhost:5000/todo/api/v2/tasks';
+   
     self.username = "";
     self.password ="";
     self.tasks = ko.observableArray();
@@ -96,6 +97,21 @@ function TasksViewModel(){
             
         });
     }
+
+    self.register = function(login){
+        self.username = login.username;
+        self.password = login.password;
+
+        self.ajax(self.registerURI, 'POST').done(function(data){
+            self.beginLogin();
+
+        }).fail( function(jqXHR) {
+            if (jqXHR.status == 403){
+                alert('Username taken');
+                setTimeout(self.beginLogin,500);
+            }
+        });
+    }
     
     self.beginLogin();
 }
@@ -145,6 +161,7 @@ function LoginViewModel(){
     var self = this;
     self.username = ko.observable();
     self.password = ko.observable();
+    self.registerURI = 'http://localhost:5000/todo/api/v2/users';
 
     self.login = function(){
         $('#login').modal('hide');
@@ -153,7 +170,42 @@ function LoginViewModel(){
             password : self.password()
         });
     }
+    self.register = function(){
+        $('#login').modal('hide');
+        
+        self.ajax(self.registerURI, 'POST', {
+            user : self.username(),
+            password : self.password()
+        }).done(function(data){
+            self.login();
+
+        }).fail( function(jqXHR) {
+            if (jqXHR.status == 403){
+                alert('Username taken');
+                setTimeout(tasksViewModel.beginLogin,500);
+            }
+        });
+
+
+    }
+
+    self.ajax = function(uri, method, data) {
+        var request = {
+            url: uri,
+            type: method,
+            contentType: "application/json",
+            accepts: "application/json",
+            cache: false,
+            dataType: 'json',
+            data: JSON.stringify(data),
+            error: function(jqXHR) {
+                console.log("ajax error " + jqXHR.status);
+            }
+        };
+        return $.ajax(request);
+    }
 }
+
 var tasksViewModel = new TasksViewModel();
 var addTaskViewModel = new AddTaskViewModel();
 var editTaskViewModel = new EditTaskViewModel();

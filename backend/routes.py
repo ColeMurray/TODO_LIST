@@ -31,6 +31,7 @@ def not_found(error):
 @app.route('/')
 def index():
     return render_template('index.html')
+
 class UserApi(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
@@ -47,10 +48,13 @@ class UserApi(Resource):
         
     def post(self):
         args = self.reqparse.parse_args()
+        print "POST"
+        for arg in args:
+            print arg
         username = args['user']
         password = args['password']
         if User.query.filter_by(username = username).first() is not None:
-            abort(400) #existing user
+            abort(403) #existing user
 
         user = User(username,password)
         db.session.add(user)
@@ -150,7 +154,7 @@ def verify_password(username,password):
 
 api.add_resource(TaskListApi, '/todo/api/v2/tasks', endpoint = 'tasks')
 api.add_resource(TaskApi, '/todo/api/v2/tasks/<int:id>', endpoint = 'task')
-api.add_resource(UserApi, '/todo/api/v2/user/', endpoint = 'user')
+api.add_resource(UserApi, '/todo/api/v2/users', endpoint = 'user')
 
 
 
