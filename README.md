@@ -11,5 +11,7 @@ create tasks to be completed.
 | POST     | http://[hostname]/todo/api/v2/tasks   | Create new task     
 | GET      | http://[hostname]/todo/api/v2/tasks   | Return user's tasks 
 | GET      | http://[hostname]/todo/api/v2/tasks/id | Get task by id
+| PUT      | http://[hostname]/todo/api/v2/tasks/id | Update task
 | DELETE   | http://[hostname]/todo/api/v2/tasks/id | Delete task
+
 
