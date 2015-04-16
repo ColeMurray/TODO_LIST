@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "todo/base.html" %}
 {% block tasks %}
 <div id="main" class="container">
         <table class="table table-striped">
@@ -113,7 +113,7 @@
         </div>
     </div>
 
-    <script src = "{{ url_for('static', filename= 'js/taskview_model.js')}}">
+    <script src = "{{ url_for('static', filename= 'todo/js/taskview_model.js')}}">
     </script>
         
 {% endblock %}

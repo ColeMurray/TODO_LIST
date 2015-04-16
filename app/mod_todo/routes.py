@@ -1,7 +1,7 @@
-from app import app, db
-from flask import g, render_template, jsonify, url_for, make_response
+from app import app,db
+from flask import Blueprint, g, render_template, jsonify, url_for, make_response
 from flask.ext.restful import Api,Resource, reqparse, fields, marshal, abort
-from models import User,Task
+from app.mod_todo.models import User,Task
 from flask.ext.httpauth import HTTPBasicAuth
 
 api = Api(app)
@@ -30,7 +30,7 @@ def not_found(error):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('todo/index.html')
 
 class UserApi(Resource):
     def __init__(self):
