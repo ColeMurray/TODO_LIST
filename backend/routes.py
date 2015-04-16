@@ -1,5 +1,5 @@
 from app import app, db
-from flask import g, render_template, url_for
+from flask import g, render_template, jsonify, url_for, make_response
 from flask.ext.restful import Api,Resource, reqparse, fields, marshal, abort
 from models import User,Task
 from flask.ext.httpauth import HTTPBasicAuth
@@ -16,6 +16,17 @@ taskfields = {
     'done' : fields.Boolean,
     'uri' : fields.Url('task')
 }
+
+@auth.error_handler
+def unauthorized():
+    return make_response( jsonify({ 'error' : 'unauthorized access'}),403)
+@app.errorhandler(400)
+def not_found(error):
+    return make_response( jsonify({'error' : 'Bad request'}),400)
+@app.errorhandler(404)
+def not_found(error):
+    return make_response( jsonify({'error' : 'Not Found'}),404)
+
 
 @app.route('/')
 def index():

@@ -1,10 +1,9 @@
 function TasksViewModel(){
-	var self = this;
+    var self = this;
     self.tasksURI = 'http://localhost:5000/todo/api/v2/tasks';
-    self.taskURI = 'http://localhost:5000/todo/api/v2/task';
-    self.username = "John";
-    self.password = "pass";
-	self.tasks = ko.observableArray();
+    self.username = "";
+    self.password ="";
+    self.tasks = ko.observableArray();
 
     self.updateTask = function(task,newTask){
         var i  = self.tasks.indexOf(task);
@@ -34,9 +33,9 @@ function TasksViewModel(){
         return $.ajax(request);
     }
 
-	self.beginAdd = function() {
+    self.beginAdd = function() {
         $('#add').modal('show');
-	}
+    }
 
     self.add = function(task){
         self.ajax(self.tasksURI, 'POST', task).done(function(data) {
@@ -49,11 +48,11 @@ function TasksViewModel(){
         });
     }
 
-	self.beginEdit = function(task) {
-		editTaskViewModel.setTask(task);
+    self.beginEdit = function(task) {
+        editTaskViewModel.setTask(task);
         $('#edit').modal('show');
 
-	}
+    }
     self.edit = function(task, data){
         self.ajax(task.uri(), 'PUT', data).done(function(res) {
             self.updateTask(task, res.task);
@@ -65,27 +64,40 @@ function TasksViewModel(){
             self.tasks.remove(task);
         });
     }
-	self.markInProgress = function(task) {
+    self.markInProgress = function(task) {
         self.ajax(task.uri(), 'PUT', { done: false }).done(function(res){
             self.updateTask(task,res.task);
         })
-	}
-	self.markDone = function(task){
+    }
+    self.markDone = function(task){
         self.ajax(task.uri(), 'PUT', { done: true }).done(function (res){
             self.updateTask(task,res.task);
         })
-	}
+    }
+    self.beginLogin = function(){
+        $('#login').modal('show');
+    }
+    self.login = function(login){
+        self.username = login.username;
+        self.password = login.password;
+
+        self.ajax(self.tasksURI, 'GET').done(function(data){
+            for (var i = 0; i < data.tasks.length; i++){
+                self.tasks.push({
+                    uri : ko.observable(data.tasks[i].uri),
+                    title: ko.observable(data.tasks[i].title),
+                    description: ko.observable(data.tasks[i].description),
+                    done: ko.observable(data.tasks[i].done)
+                });
+            }
+        }).fail( function(jqXHR){
+            if (jqXHR.status == 403)
+                setTimeout(self.beginLogin,500);
+            
+        });
+    }
     
-    self.ajax(self.tasksURI, 'GET').done(function(data){
-        for (var i = 0; i < data.tasks.length; i++){
-            self.tasks.push({
-                uri : ko.observable(data.tasks[i].uri),
-                title: ko.observable(data.tasks[i].title),
-                description: ko.observable(data.tasks[i].description),
-                done: ko.observable(data.tasks[i].done)
-            });
-        }
-    });
+    self.beginLogin();
 }
 
 
@@ -113,25 +125,41 @@ function EditTaskViewModel(){
 
     self.setTask = function(task){
         self.task = task;
-        self.title = (task.title());
-        self.description = (task.description());
+        self.title(task.title());
+        self.description(task.description());
         self.done(task.done());
-        $('edit').modal('show');
+        $('#edit').modal('show');
     }
     self.editTask = function(){
         $('#edit').modal('hide');
         tasksViewModel.edit(self.task, {
-            title: self.title,
-            description : self.description ,
+            title : self.title(),
+            description : self.description() ,
             done : self.done()
         });
 
     }
 }
+
+function LoginViewModel(){
+    var self = this;
+    self.username = ko.observable();
+    self.password = ko.observable();
+
+    self.login = function(){
+        $('#login').modal('hide');
+        tasksViewModel.login({
+            username : self.username(),
+            password : self.password()
+        });
+    }
+}
 var tasksViewModel = new TasksViewModel();
 var addTaskViewModel = new AddTaskViewModel();
 var editTaskViewModel = new EditTaskViewModel();
+var loginViewModel = new LoginViewModel();
 ko.applyBindings(tasksViewModel, $('#main')[0]);
 ko.applyBindings(addTaskViewModel, $('#add')[0]);
 ko.applyBindings(editTaskViewModel, $('#edit')[0]);
+ko.applyBindings(loginViewModel, $('#login')[0]);
 
